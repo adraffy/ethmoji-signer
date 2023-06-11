@@ -23,22 +23,19 @@ const http = createServer(async (req, reply) => {
 		if (req.method !== 'GET') throw 405;
 		let url = new URL(req.url, 'http://a');
 		if (url.pathname !== '/sign') throw 404;
-		let label = url.searchParams.get('label');
-		if (typeof label !== 'string') {
-			return write_json(reply, {error: 'expected label'});
-		}
+		let label = url.searchParams.get('label') ?? '';
 		let norm;
 		try {
 			norm = ens_normalize(label);
 		} catch (err) {
-			console.log(err);
 			return write_json(reply, {error: err.message});
 		}
-		// norm is normalized and not empty
-		if (!ens_tokenize(norm).every(t => t.emoji)) {
-			return write_json(reply, {error: 'not an ethmoji'});
+		if (norm.includes('.')) {
+			return write_json(reply, {error: 'multiple labels'});
 		}
-		// norm is only emoji
+		if (ens_tokenize(label).some(x => !x.emoji)) {
+			return write_json(reply, {error: 'expected emoji'});
+		}
 		let hash = ethers.utils.solidityKeccak256(
 			['string', 'bytes32'],
 			[SIG_PREFIX, ethers.utils.id(norm)]
@@ -47,9 +44,13 @@ const http = createServer(async (req, reply) => {
 		sig = ethers.utils.hexConcat([sig.r, sig.s, sig.v]);
 		return write_json(reply, {norm, sig});
 	} catch (err) {
-		reply.statusCode = Number.isInteger(err) ? err : 400;
-		console.log(err);
-		reply.end();
+		if (Number.isInteger(err)) {
+			reply.statusCode = err;
+			reply.end();
+		} else {
+			reply.statusCode = 400;
+			reply.end(err.message);
+		}
 	}
 });
 await new Promise((ful, rej) => {
