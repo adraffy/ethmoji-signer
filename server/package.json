@@ -1,0 +1,11 @@
+{
+	"type": "module",
+	"scripts": {
+		"random": "node -e 'console.log(require(\"ethers\").Wallet.createRandom()._signingKey().privateKey)'",
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"@adraffy/ens-normalize": "^1.9.2",
+		"ethers": "^5.7.2"
+	}
+}
