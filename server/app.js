@@ -6,11 +6,8 @@ import {ens_normalize, ens_tokenize} from '@adraffy/ens-normalize';
 // Configuration:
 
 const HTTP_PORT = 10000;
-const PRIVATE_KEY = '0x9cee088d5451010098b5728028d9a6455d3b9639c658d4e388d9f79c53c531ab';
+const PRIVATE_KEY = '0x9cee088d5451010098b5728028d9a6455d3b9639c658d4e388d9f79c53c531ab'; // npm run random
 const SIG_PREFIX = 'ethmoji:';
-
-// you can generate a random private key using:
-// console.log(new ethers.Wallet.createRandom()._signingKey().privateKey);
 
 // ********************************************************************************
 
